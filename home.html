@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Somu Stream</title>
+<link rel="preload" href="karuppu_b.jpg" as="image" fetchpriority="high">
+<link rel="icon" type="image/webp" href="logo.webp">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="page-loader">
+  <div class="loader-spinner"></div>
+  </div>
+  
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo logo-text" onclick="resetToHome()">SOMUSTREAM</div>
+</nav>
+
+<!-- HERO BANNER -->
+<section class="hero" id="heroBannerSection">
+  <div class="hero-poster-bg" id="heroBg" style="background-image: url('karuppu_b.jpg');"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-orb-pink"></div>
+  <div class="hero-orb-blue"></div>
+  <div class="hero-fade"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="live-dot"></div> Trending Now</div>
+    <h1 class="hero-title" id="heroTitle">Watch <span>Unlimited</span><br>Movies</h1>
+    <p class="hero-desc" id="heroDesc">Loading trending movies...</p>
+    <div class="hero-btns">
+      <button class="btn-watch" id="heroWatchBtn" onclick="handleHeroBtnTouch(this, 1, event)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Watch Now
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-item"><div class="stat-num" id="statTotalMovies">0</div><div class="stat-label">Movies</div></div>
+  <div class="stat-item"><div class="stat-num">4K</div><div class="stat-label">Quality</div></div>
+  <div class="stat-item"><div class="stat-num" id="statTotalLangs">0</div><div class="stat-label">Languages</div></div>
+  <div class="stat-item"><div class="stat-num">Free</div><div class="stat-label">Forever</div></div>
+</div>
+
+<!-- MAIN HOMEPAGE SECTIONS -->
+<div id="homepageSections">
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">⚚ Trending Now <span class="section-counter" id="trendingCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('trending', '⚚ Trending Now', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="trendingRow"></div>
+  </section>
+
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">        
+      <div class="section-title">✪ Spiderman Collections<span class="section-counter" id="spiderCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('spider', '✪ Spiderman Collections', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="spiderRow"></div>
+  </section>
+
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">☄ Marvel's Studio <span class="section-counter" id="featuredCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('featured', '☄ Marvel\'s Studio', true)">View All →</a>
+    </div>
+    <div class="featured-row" id="featuredRow"></div>
+  </section>
+
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">𓄀 Tamil Hits <span class="section-counter" id="tamilCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('tamil', '𓄀 Tamil Hits', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="tamilRow"></div>
+  </section>
+  
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">☠︎︎ Evil Dead Collections<span class="section-counter" id="evilCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('evil', '☠︎︎ Evil Dead Collections', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="evilRow"></div>
+  </section>
+
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">✦ Popular Movies <span class="section-counter" id="popularCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('popular', '✦ Popular Movies', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="popularRow"></div>
+  </section>
+  
+  <section class="section" style="padding-top: 0;">
+  <div class="section-header">
+    <div class="section-title">♡ Find Your Love Story <span class="section-counter" id="loveStoryCount">0</span></div>
+    <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('love_story', '♡ Find Your Love Story', true)">View All →</a>
+  </div>
+  <div class="featured-row" id="loveStoryRow"></div>
+</section>
+
+<section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">✌︎︎ Popular Kids Movies <span class="section-counter" id="KidsCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('kids', '✌︎︎ Popular Kids Movies', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="KidsRow"></div>
+  </section>
+  
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">♱ Horror Movies<span class="section-counter" id="horrorCount">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('horror', '♱ Horror Movies', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="horrorRow"></div>
+  </section>
+  
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">☢ Mystic Blessings <span class="section-counter" id="80Count">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('80', '☢ Mystic Blessings', true)">View All →</a>
+    </div>
+    <div class="featured-row" id="80Row"></div>
+  </section>
+  <section class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <div class="section-title">❿ Ben 10 Classic season 1<span class="section-counter" id="ben1Count">0</span></div>
+      <a class="section-more" href="javascript:void(0)" onclick="viewAllCategory('ben1', '❿ Ben 10 season 1', false)">View All →</a>
+    </div>
+    <div class="movie-row" id="ben1Row"></div>
+  </section>
+  
+  
+</div>
+
+<!-- DYNAMIC VIEW ALL GRID CONTAINER -->
+<div id="viewAllSection" style="display: none;">
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title" id="viewAllTitle">Category Title</div>
+      <a class="section-more" href="javascript:void(0)" onclick="resetToHome()">← Back To Home</a>
+    </div>
+    <div id="viewAllGridContainer"></div>
+  </section>
+</div>
+
+<!-- SEARCH VIEW (slides in from left) -->
+<div id="searchView">
+  <section class="section" style="padding-top: 10px;">
+    <div class="genre-chips" id="genreChips">
+      <div class="chip active" onclick="filterGenre(this,'all')">All</div>
+      <div class="chip" onclick="filterGenre(this,'action')">Action</div>
+      <div class="chip" onclick="filterGenre(this,'comedy')">Comedy</div>
+      <div class="chip" onclick="filterGenre(this,'thriller')">Thriller</div>
+      <div class="chip" onclick="filterGenre(this,'romance')">Romance</div>
+      <div class="chip" onclick="filterGenre(this,'english')">English</div>
+      <div class="chip" onclick="filterGenre(this,'horror')">Horror</div>
+      <div class="chip" onclick="filterGenre(this,'tamil')">Tamil</div>
+      <div class="chip" onclick="filterGenre(this,'hindi')">Hindi</div>
+      <div class="chip" onclick="filterGenre(this,'sci-fi')">Sci-Fi</div>
+    </div>
+  </section>
+
+  <div class="search-container">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="" oninput="filterGenreSearch()">
+      <span id="dynamicLabel" class="slide-up-label">Search 'Leo'...</span>
+      <button id="searchClear" onclick="clearSearchInput()" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; z-index: 3; display: none; font-size: 16px; font-weight: bold; outline: none;">✕</button>
+    </div>
+  </div>
+
+  <div id="searchResultsGrid" class="bento-grid"></div>
+</div>
+
+<!-- MY LIST VIEW (slides in from left) -->
+<div id="myListSection">
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">✚ My List <span class="section-counter" id="myListCount">0</span></div>
+    </div>
+    <div id="myListGrid" class="view-all-grid"></div>
+  </section>
+</div>
+
+<!-- BOTTOM NAV BAR -->
+<nav class="bottom-nav">
+  <div class="nav-item" id="nav-search" onclick="showSearchView()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span>Search</span>
+  </div>
+  <div class="nav-item active" id="nav-home" onclick="showHome()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" id="nav-mylist" onclick="showMyListView()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
+    <span>MyList</span>
+  </div>
+</nav>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SOMUSTREAM</div>
+  <div class="footer-links">
+    <a href="#">About</a><a href="#">Contact</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Help</a>
+  </div>
+  <p class="footer-copy">© 2026 SOMUSTREAM. Made with 💜 by Veerabaghu.S</p>
+</footer>
+
+<!-- BACK TO TOP BUTTON -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to Top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- MOVIE DETAIL MODAL -->
+<div id="movieModal">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-box">
+    <div id="modalPosterWrap"></div>
+    <div class="modal-body">
+      <div class="modal-badge-row" id="modalBadgeRow"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-meta" id="modalMeta"></div>
+      <div class="modal-btns">
+        <button class="modal-watch-btn" id="modalWatchBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Watch Now
+        </button>
+        <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast-message" class="toast"></div>
+  
+  
+<script src="script.js"></script>
+</body>
+</html>
