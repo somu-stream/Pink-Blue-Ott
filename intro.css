@@ -1,0 +1,208 @@
+/* 1. Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* 2. Body Layout & Full Pro Gaming Dark Background with Strict Lock */
+body {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #050811; 
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(255, 47, 166, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(42, 168, 255, 0.12) 0px, transparent 50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  animation: bgFadeIn 1.5s ease-out forwards;
+  width: 100vw; /* Screen width ku thagundha madhiri fix panna */
+    overflow-x: hidden; /*
+
+  /* Screen-la enga touch pannalum, click handles, double taps edhuvume work aagadhiruka */
+  pointer-events: none;
+
+  /* Blue text selection-ah completely eliminate panna */
+  -webkit-user-select: none; /* Safari/Chrome mobile */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE10+ */
+  user-select: none;         /* Standard */
+
+  /* Mobile browser long press magnifying glass layout & blue highlighted overlays block panna */
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 3. Main Container */
+.intro {
+  position: relative;
+  width: 360px;
+  height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Hardware acceleration toggle for fluid transitions */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+/* 4. Rings Setup - Continuous Linear Smooth Loops */
+.ring {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  border-radius: 50%;
+  /* Round circle grey line varaama iruka transparent default */
+  border: 4px solid transparent; 
+  filter: drop-shadow(0 0 10px rgba(255, 47, 166, 0.4))
+          drop-shadow(0 0 10px rgba(42, 168, 255, 0.4));
+  z-index: 5;
+  opacity: 1; /* Instant visible, no complex entry fade delay */
+}
+
+.ring1 {
+  width: 180px;
+  height: 180px;
+  border-top-color: #ff2fa6;
+  border-right-color: #2aa8ff;
+  animation: smoothRotate1 2.5s linear infinite; /* Pure linear smooth rotation */
+}
+
+.ring2 {
+  width: 235px;
+  height: 235px;
+  border-left-color: #ff2fa6;
+  border-bottom-color: #2aa8ff;
+  animation: smoothRotate2 3.5s linear infinite;
+}
+
+/* Last Ring - Segment gaps oda mattumae ultra smooth-ah suthum */
+.ring3 {
+  width: 290px;
+  height: 290px;
+  border-right-color: rgba(42, 168, 255, 0.8);
+  border-left-color: rgba(255, 47, 166, 0.8);
+  animation: smoothRotate1 4.5s linear infinite;
+}
+
+
+/* 5. Logo Position */
+.content {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(0);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0 15px rgba(255, 47, 166, 0.5))
+          drop-shadow(0 0 18px rgba(42, 168, 255, 0.5));
+          
+  /* Photo-va long press panna Download Image pop-up, copy image laam varaama iruka script safety */
+  pointer-events: none;
+  -webkit-touch-callout: none;
+}
+
+
+/* 6. Text Container Layout */
+.text-content {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+  text-align: center;
+  z-index: 10;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Optimized Brand Dynamic Sweep */
+.brand {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  
+  background: linear-gradient(
+    120deg, 
+    #ff2fa6 0%, 
+    #ffffff 25%, 
+    #2aa8ff 50%, 
+    #ff2fa6 75%, 
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  filter: drop-shadow(0 0 10px rgba(255, 47, 166, 0.4));
+  /* 4s dummy rendering mathi speed up panni frames stabilize panniruken */
+  animation: neonSweep 3s linear infinite; 
+}
+
+/* Optimized Tagline */
+.tagline {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  
+  background: linear-gradient(90deg, #2aa8ff, #ff2fa6, #2aa8ff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  filter: drop-shadow(0 0 6px rgba(42, 168, 255, 0.4));
+  animation: taglineGlow 3s linear infinite;
+}
+/* 7. Keyframes for Smooth Entry & Rotation Unified (Rings visible aaga idhu mukkiyam) */
+@keyframes ring1EntryAndRotate {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, -50%) scale(1) rotate(60deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+@keyframes ring2EntryAndRotate {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(360deg);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, -50%) scale(1) rotate(300deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+/* Keyframes for Pure Uniform Linear Rotation */
+@keyframes smoothRotate1 {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes smoothRotate2 {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to { transform: translate(-50%, -50%) rotate(0deg); }
+}

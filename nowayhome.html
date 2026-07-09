@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Somu Stream - Spiderman No Way home 2021</title>
+    <link rel="icon" type="image/webp" href="logo.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif !important;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        :root {
+            --pink: #ff007f;
+            --blue: #00b0ff;
+            --surface: rgba(10, 10, 18, 0.95);
+        }
+
+        html, body {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 4 ASPECT RATIO MODES CSS */
+        video.mode-fit {
+            width: 100%; height: 100%;
+            object-fit: contain;
+        }
+        video.mode-stretch {
+            width: 100%; height: 100%;
+            object-fit: fill;
+        }
+        video.mode-100 {
+            width: auto; height: auto;
+            max-width: 100%; max-height: 100%;
+            object-fit: contain;
+        }
+        video.mode-crop {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.88) 0%,
+                rgba(0,0,0,0) 20%,
+                rgba(0,0,0,0) 65%,
+                rgba(0,0,0,0.95) 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .video-container.controls-hidden .controls-overlay,
+        .video-container.controls-hidden .header-section,
+        .video-container.controls-hidden .footer-section {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* SCREEN LOCK ACTIVE STYLES */
+        .video-container.locked-active .header-section,
+        .video-container.locked-active .footer-section .seekbar-row,
+        .video-container.locked-active .action-buttons-row > button:not(#lockBtn) {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+        /* TOP */
+        .header-section {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 14px 16px 10px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .movie-title {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .stream-badge {
+            color: var(--blue);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            border: 1px solid rgba(0,176,255,0.35);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .quick-actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-left: 4px;
+        }
+
+        /* BOTTOM */
+        .footer-section {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            padding: 10px 16px 22px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .seekbar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .time-text {
+            color: rgba(255,255,255,0.85);
+            font-size: 11px;
+            min-width: 54px;
+            white-space: nowrap;
+        }
+
+        .seekbar-container {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .seekbar-buffer {
+            position: absolute;
+            height: 100%;
+            width: 0%;
+            background: rgba(0,176,255,0.2);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        .seekbar-played {
+            position: relative;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--blue), var(--pink));
+            border-radius: 2px;
+            z-index: 1;
+        }
+
+        .seekbar-thumb {
+            position: absolute;
+            right: -7px; top: 50%;
+            transform: translateY(-50%);
+            width: 14px; height: 14px;
+            background: var(--pink);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--pink), 0 0 4px var(--blue);
+        }
+
+        .action-buttons-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2px;
+            position: relative;
+            width: 100%;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.9);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: color 0.2s, transform 0.1s, opacity 0.3s, visibility 0.3s;
+        }
+
+        .icon-btn:active { transform: scale(0.88); }
+        .icon-btn svg { width: 24px; height: 24px; fill: currentColor; display: block; }
+
+        #playPauseBtn svg { width: 36px; height: 36px; }
+        #playPauseBtn { color: var(--blue); }
+        
+        /* LOCK BUTTON ACTIVE GLOW EFFECT */
+        #lockBtn { color: var(--pink); transition: all 0.3s ease; }
+        .video-container.locked-active #lockBtn {
+            text-shadow: 0 0 10px var(--pink);
+        }
+
+        /* LOADER ON BACKGROUND */
+        .custom-loader-screen {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .neon-ring {
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.06);
+            border-top-color: var(--pink);
+            border-bottom-color: var(--blue);
+            animation: spin 0.75s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* SPEED DROPDOWN */
+        .speed-dropdown {
+            position: absolute;
+            top: 95px; left: 42px;
+            background: var(--surface);
+            border: 1px solid rgba(0,176,255,0.2);
+            border-radius: 10px;
+            padding: 4px;
+            display: none;
+            flex-direction: column;
+            width: 82px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.9);
+            z-index: 15;
+        }
+
+        .speed-dropdown button {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            padding: 7px 4px;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 6px;
+        }
+        .speed-dropdown button:hover { background: var(--pink); color: #fff; }
+
+        /* FLASH INDICATOR */
+        .top-indicator {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--surface);
+            border: 1px solid rgba(0,176,255,0.3);
+            border-radius: 8px;
+            padding: 6px 18px;
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 15;
+            display: none;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* LOCK BADGE / TAP TO UNLOCK SCREEN BUTTON */
+        .lock-badge {
+            position: absolute;
+            bottom: 28px; left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid rgba(255,0,127,0.45);
+            border-radius: 30px;
+            padding: 8px 22px;
+            color: var(--pink);
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 30;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,0,127,0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .lock-badge svg { width: 16px; height: 16px; fill: var(--pink); }
+
+        .video-container.controls-hidden.locked-active .footer-section {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #speedSettingsBtn {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<svg style="display:none">
+  <defs>
+    <symbol id="ic-back" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></symbol>
+    
+    <symbol id="ic-lock-open" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM8.9 6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2H8.9V6zM18 20H6V10h12v10z"/></symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></symbol>
+    
+    <symbol id="ic-replay10" viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/><text x="7.5" y="16" font-size="6" font-family="sans-serif" font-weight="bold" fill="currentColor">10</text></symbol>
+    <symbol id="ic-forward10" viewBox="0 0 24 24"><path d="M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2z"/><text x="7.5" y="16" font-size="6" font-family="sans-serif" font-weight="bold" fill="currentColor">10</text></symbol>
+    <symbol id="ic-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="ic-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></symbol>
+    <symbol id="ic-aspect" viewBox="0 0 24 24"><path d="M19 12h-2v3h-3v2h5v-5zM7 9h3V7H5v5h2V9zm14-6H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/></symbol>
+    <symbol id="ic-fs" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></symbol>
+    <symbol id="ic-fsexit" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></symbol>
+  </defs>
+</svg>
+
+<div class="video-container" id="videoContainer">
+
+    <div class="custom-loader-screen" id="preloader">
+        <div class="neon-ring"></div>
+    </div>
+
+    <div class="top-indicator" id="topIndicator"></div>
+
+    <div class="lock-badge" id="lockBadge" onclick="unlockScreen()">
+        <svg><use href="#ic-lock"/></svg>
+        TAP TO UNLOCK
+    </div>
+
+        <video id="myVideo" class="mode-fit" playsinline preload="auto" poster="https://bit.ly/47W9X9p">
+        <source src="https://dub2-1.uptodub.ch/files/Tamil%20Dubbed%20Movies/Spider-Man%20No%20Way%20Home%20(2021)/Spider-Man%20No%20Way%20Home%20(Original)/Spider-Man%20No%20Way%20Home%20(720p%20HD)/Spider-Man%20No%20Way%20Home%202021%20720p%20HD.mp4?h=c5edb7ced817533aa53d8f10110fd34ff3a3c84954b8d496e1aebf16a1ef4232&e=1783189766&stream=1" type="video/mp4">
+    </video>
+
+
+    <div class="controls-overlay"></div>
+
+    <div class="header-section" id="headerSection">
+        <div class="top-bar">
+            <div class="top-left">
+                <button class="icon-btn" onclick="window.location.replace('home.html')">
+                    <svg><use href="#ic-back"/></svg>
+                </button>
+                <div class="movie-title">Spiderman No Way home 2021</div>
+            </div>
+            <div class="stream-badge">SOMUSTREAM</div>
+        </div>
+        <div class="quick-actions-bar">
+            <button class="icon-btn" id="speedSettingsBtn">1X</button>
+        </div>
+        <div class="speed-dropdown" id="speedDropdown">
+            <button onclick="changeSpeed(0.5,'0.5X')">0.5x</button>
+            <button onclick="changeSpeed(0.75,'0.75X')">0.75x</button>
+            <button onclick="changeSpeed(1,'1X')">Normal</button>
+            <button onclick="changeSpeed(1.25,'1.25X')">1.25x</button>
+            <button onclick="changeSpeed(1.5,'1.5X')">1.5x</button>
+            <button onclick="changeSpeed(2,'2X')">2x</button>
+        </div>
+    </div>
+
+    <div class="footer-section" id="footerSection">
+        <div class="seekbar-row">
+            <div class="time-text" id="currentTime">0:00:00</div>
+            <div class="seekbar-container" id="seekBarContainer">
+                <div class="seekbar-buffer" id="seekBarBuffer"></div>
+                <div class="seekbar-played" id="seekBarPlayed">
+                    <div class="seekbar-thumb"></div>
+                </div>
+            </div>
+            <div class="time-text" id="durationTime" style="text-align:right;">0:00:00</div>
+        </div>
+
+        <div class="action-buttons-row">
+            <button class="icon-btn" id="lockBtn">
+                <svg id="lockIconSvg"><use href="#ic-lock-open"/></svg>
+            </button>
+            <button class="icon-btn" id="backwardBtn">
+                <svg><use href="#ic-replay10"/></svg>
+            </button>
+            <button class="icon-btn" id="playPauseBtn">
+                <svg><use href="#ic-play"/></svg>
+            </button>
+            <button class="icon-btn" id="forwardBtn">
+                <svg><use href="#ic-forward10"/></svg>
+            </button>
+            <button class="icon-btn" id="aspectRatioBtn">
+                <svg><use href="#ic-aspect"/></svg>
+            </button>
+            <button class="icon-btn" id="fullscreenBtn">
+                <svg><use href="#ic-fs"/></svg>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    if (window.performance && window.performance.navigation.type === 2) {
+        window.location.href = 'home(1).html';
+    }
+
+    const vc        = document.getElementById('videoContainer');
+    const video     = document.getElementById('myVideo');
+    const preloader = document.getElementById('preloader');
+    const ppBtn     = document.getElementById('playPauseBtn');
+    const bkBtn     = document.getElementById('backwardBtn');
+    const fwBtn     = document.getElementById('forwardBtn');
+    const speedBtn  = document.getElementById('speedSettingsBtn');
+    const speedDrop = document.getElementById('speedDropdown');
+    const fsBtn     = document.getElementById('fullscreenBtn');
+    const lockBtn   = document.getElementById('lockBtn');
+    const lockIconSvg = document.getElementById('lockIconSvg');
+    const lockBadge = document.getElementById('lockBadge');
+    const arBtn     = document.getElementById('aspectRatioBtn');
+    const sbCont    = document.getElementById('seekBarContainer');
+    const sbPlayed  = document.getElementById('seekBarPlayed');
+    const sbBuffer  = document.getElementById('seekBarBuffer');
+    const curTime   = document.getElementById('currentTime');
+    const durTime   = document.getElementById('durationTime');
+    const indicator = document.getElementById('topIndicator');
+
+    let ctTimer, indTimer, badgeTimer;
+    let isDragging = false, isLocked = false;
+
+    // 4 ASPECT RATIO MODES CONFIGURATION
+    const aspectClasses = ['mode-fit', 'mode-stretch', 'mode-100', 'mode-crop'];
+    const aspectLabels  = ['FIT TO SCREEN', 'STRETCH', '100%', 'CROP'];
+    let aspectIdx = 0;
+
+    video.addEventListener('progress', () => {
+        if (video.buffered.length && video.duration)
+            sbBuffer.style.width = ((video.buffered.end(video.buffered.length-1)/video.duration)*100)+'%';
+    });
+    video.addEventListener('waiting', () => { preloader.style.display = 'flex'; });
+    video.addEventListener('playing', () => { preloader.style.display = 'none'; });
+    video.addEventListener('canplay',  () => { preloader.style.display = 'none'; });
+
+    function setPlayIcon() { ppBtn.innerHTML = '<svg><use href="#ic-play"/></svg>'; }
+    function setPauseIcon(){ ppBtn.innerHTML = '<svg><use href="#ic-pause"/></svg>'; }
+
+    function togglePlay() {
+        if (isLocked) return;
+        if (video.paused) { 
+            video.play()
+                .then(() => { setPauseIcon(); resetCT(); })
+                .catch(err => console.log("Play handled safely:", err.message)); 
+        }
+        else { video.pause(); setPlayIcon(); showControls(); }
+    }
+    ppBtn.addEventListener('click', e => { e.stopPropagation(); togglePlay(); });
+
+    bkBtn.addEventListener('click', e => {
+        e.stopPropagation(); if (isLocked) return;
+        video.currentTime = Math.max(0, video.currentTime - 10);
+        flash('- 10s'); resetCT();
+    });
+    fwBtn.addEventListener('click', e => {
+        e.stopPropagation(); if (isLocked) return;
+        video.currentTime = Math.min(video.duration, video.currentTime + 10);
+        flash('+ 10s'); resetCT();
+    });
+
+    function flash(msg) {
+        indicator.textContent = msg;
+        indicator.style.display = 'block';
+        clearTimeout(indTimer);
+        indTimer = setTimeout(() => { indicator.style.display = 'none'; }, 900);
+    }
+
+    arBtn.addEventListener('click', e => {
+        e.stopPropagation(); if (isLocked) return;
+        video.classList.remove(aspectClasses[aspectIdx]);
+        aspectIdx = (aspectIdx + 1) % aspectClasses.length;
+        video.classList.add(aspectClasses[aspectIdx]);
+        flash(aspectLabels[aspectIdx]);
+        resetCT();
+    });
+
+    vc.addEventListener('click', e => {
+        if (e.target.closest('#headerSection') || e.target.closest('#footerSection')) return;
+        if (isLocked) {
+            lockBadge.style.display = 'flex';
+            clearTimeout(badgeTimer);
+            badgeTimer = setTimeout(() => { lockBadge.style.display = 'none'; }, 2500);
+            return;
+        }
+        if (vc.classList.contains('controls-hidden')) { showControls(); resetCT(); }
+        else hideControls();
+    });
+
+    // Screen Lock UI Fix (Perfect Hide System)
+    lockBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        isLocked = true;
+        vc.classList.add('locked-active');
+        lockIconSvg.innerHTML = '<use href="#ic-lock"/>'; 
+        lockBadge.style.display = 'none';
+        hideControls();
+    });
+
+    function unlockScreen() {
+        isLocked = false;
+        vc.classList.remove('locked-active');
+        lockBadge.style.display = 'none';
+        clearTimeout(badgeTimer);
+        lockIconSvg.innerHTML = '<use href="#ic-lock-open"/>';
+        showControls(); resetCT();
+    }
+
+    function showControls() { vc.classList.remove('controls-hidden'); clearTimeout(ctTimer); }
+    function hideControls() {
+        if (!video.paused && !isDragging) {
+            vc.classList.add('controls-hidden');
+            speedDrop.style.display = 'none';
+        }
+    }
+    function resetCT() {
+        clearTimeout(ctTimer);
+        if (!video.paused && !isDragging)
+            ctTimer = setTimeout(hideControls, 3500);
+    }
+
+    vc.addEventListener('mousemove', () => {
+        if (!vc.classList.contains('controls-hidden')) resetCT();
+    });
+
+    function fmt(t) {
+        const h=Math.floor(t/3600), m=Math.floor((t%3600)/60), s=Math.floor(t%60);
+        return `${h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+    }
+    video.addEventListener('loadedmetadata', () => { durTime.innerText = fmt(video.duration); });
+    video.addEventListener('timeupdate', () => {
+        if (!isDragging) {
+            sbPlayed.style.width = ((video.currentTime/video.duration)*100)+'%';
+            curTime.innerText = fmt(video.currentTime);
+        }
+    });
+
+    function seekAt(e) {
+        const rect = sbCont.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const pos = Math.max(0, Math.min(1, (cx-rect.left)/rect.width));
+        sbPlayed.style.width = (pos*100)+'%';
+        curTime.innerText = fmt(pos*video.duration);
+        return pos;
+    }
+
+    sbCont.addEventListener('mousedown', e => {
+        if (isLocked) return;
+        isDragging = true; clearTimeout(ctTimer);
+        video.currentTime = seekAt(e)*video.duration;
+    });
+    window.addEventListener('mousemove', e => { if (isDragging) seekAt(e); });
+    window.addEventListener('mouseup', e => {
+        if (isDragging) { isDragging = false; video.currentTime = seekAt(e)*video.duration; resetCT(); }
+    });
+
+    sbCont.addEventListener('touchstart', e => {
+        if (isLocked) return; isDragging = true; clearTimeout(ctTimer); seekAt(e);
+    }, { passive: true });
+    window.addEventListener('touchmove', e => { if (isDragging) seekAt(e); }, { passive: true });
+    window.addEventListener('touchend', e => {
+        if (isDragging) {
+            isDragging = false;
+            const rect = sbCont.getBoundingClientRect();
+            const pos = Math.max(0, Math.min(1, (e.changedTouches[0].clientX-rect.left)/rect.width));
+            video.currentTime = pos*video.duration; resetCT();
+        }
+    });
+
+    speedBtn.addEventListener('click', e => {
+        e.stopPropagation(); if (isLocked) return;
+        speedDrop.style.display = speedDrop.style.display === 'flex' ? 'none' : 'flex';
+    });
+    function changeSpeed(s, lbl) {
+        video.playbackRate = s; speedBtn.innerText = lbl;
+        speedDrop.style.display = 'none'; flash(lbl); resetCT();
+    }
+
+    let isFull = false;
+    fsBtn.addEventListener('click', e => {
+        e.stopPropagation(); if (isLocked) return;
+        if (!isFull) {
+            (vc.requestFullscreen||vc.webkitRequestFullscreen).call(vc);
+        } else {
+            (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+        }
+        resetCT();
+    });
+    document.addEventListener('fullscreenchange', () => {
+        isFull = !!document.fullscreenElement;
+        fsBtn.innerHTML = isFull ? '<svg><use href="#ic-fsexit"/></svg>' : '<svg><use href="#ic-fs"/></svg>';
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+        isFull = !!document.webkitFullscreenElement;
+        fsBtn.innerHTML = isFull ? '<svg><use href="#ic-fsexit"/></svg>' : '<svg><use href="#ic-fs"/></svg>';
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){
+            e.preventDefault(); return false;
+        }
+    });
+        // Video meta details-ai page load aagum pothe ready aakidum
+    video.addEventListener('loadedmetadata', () => { 
+        durTime.innerText = fmt(video.duration); 
+    });
+    
+</script>
+</body>
+</html>
